@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "mokapot_coppice"
+version = "0.0.1"
+description = ""
+authors = ["J. Sebastian Paez <jspaezp@users.noreply.github.com>"]
+packages = [{include = "mokapot_ctree"}]
+license = "Apache 2.0"
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.0"
+pytest-datadir = "^1.4.1"
+pytest-cov = "^4.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+mokapot = "^0.8.3"
+lightgbm = "^3.3.3"
+skranger = "^0.8.0"
+xgboost = "^1.6.2"
+
+[tool.poetry.plugins."mokapot.plugins"]
+"mokapot_coppice" = "mokapot_coppice:Plugin"
