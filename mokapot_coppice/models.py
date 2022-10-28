@@ -9,6 +9,7 @@ from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
 from skranger.ensemble import RangerForestClassifier
 from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class CatboostModel(Model):
 
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: Catboost")
-        clf = CatboostClassifier()
+        clf = CatBoostClassifier()
         super().__init__(clf, *args, **kwargs)
 
 
