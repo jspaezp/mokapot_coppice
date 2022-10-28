@@ -13,6 +13,23 @@ tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900
 tests-no-zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
+name = "catboost"
+version = "1.1"
+description = "Catboost Python Package"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+graphviz = "*"
+matplotlib = "*"
+numpy = ">=1.16.0"
+pandas = ">=0.24.0"
+plotly = "*"
+scipy = "*"
+six = "*"
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -92,6 +109,19 @@ type1 = ["xattr"]
 ufo = ["fs (>=2.2.0,<3)"]
 unicode = ["unicodedata2 (>=14.0.0)"]
 woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
+
+[[package]]
+name = "graphviz"
+version = "0.20.1"
+description = "Simple Python interface for Graphviz"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+dev = ["flake8", "pep8-naming", "tox (>=3)", "twine", "wheel"]
+docs = ["sphinx (>=5)", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
+test = ["coverage", "mock (>=4)", "pytest (>=7)", "pytest-cov", "pytest-mock (>=3)"]
 
 [[package]]
 name = "importlib-metadata"
@@ -194,11 +224,12 @@ setuptools_scm = ">=7"
 
 [[package]]
 name = "mokapot"
-version = "0.8.3"
+version = "0.7.2.dev45+gc3dab97"
 description = "Fast and flexible semi-supervised learning for peptide detection"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+develop = false
 
 [package.dependencies]
 joblib = ">=1.1.0"
@@ -213,6 +244,12 @@ triqler = ">=0.6.2"
 [package.extras]
 dev = ["black (>=19.10b0)", "pre-commit (>=2.7.1)"]
 docs = ["ipykernel (>=5.3.0)", "nbsphinx (>=0.7.1)", "numpydoc (>=1.0.0)", "recommonmark (>=0.5.0)", "sphinx-argparse (>=0.2.5)", "sphinx-rtd-theme (>=0.5.0)"]
+
+[package.source]
+type = "git"
+url = "git@github.com:jspaezp/mokapot.git"
+reference = "feature/plugin_arch"
+resolved_reference = "c3dab97ee43a45a54b9e50638fdfc55dcedd639f"
 
 [[package]]
 name = "numba"
@@ -277,6 +314,17 @@ python-versions = ">=3.7"
 [package.extras]
 docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-issues (>=3.0.1)", "sphinx-removed-in", "sphinxext-opengraph"]
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
+
+[[package]]
+name = "plotly"
+version = "5.11.0"
+description = "An open-source, interactive data visualization library for Python"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+tenacity = ">=6.2.0"
 
 [[package]]
 name = "pluggy"
@@ -453,6 +501,17 @@ python-versions = ">=3.8.0,<4.0.0"
 scikit-learn = ">=1.0"
 
 [[package]]
+name = "tenacity"
+version = "8.1.0"
+description = "Retry code until it succeeds"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+doc = ["reno", "sphinx", "tornado (>=4.5)"]
+
+[[package]]
 name = "threadpoolctl"
 version = "3.1.0"
 description = "threadpoolctl"
@@ -534,12 +593,29 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.12"
-content-hash = "601717592ffe653f1191757288e163e502d317588da74d0bcdfc992faa26f44b"
+content-hash = "4257690b4136590d4d47a3c8a8bafa7153066b5eed56c886ee80efd9bd512cc0"
 
 [metadata.files]
 attrs = [
     {file = "attrs-22.1.0-py2.py3-none-any.whl", hash = "sha256:86efa402f67bf2df34f51a335487cf46b1ec130d02b8d39fd248abfd30da551c"},
     {file = "attrs-22.1.0.tar.gz", hash = "sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6"},
+]
+catboost = [
+    {file = "catboost-1.1-cp310-none-macosx_10_6_universal2.whl", hash = "sha256:b5b47ad4c640e8061e00b9d9e620d47d64c2cdb2a3f34f403290922b71b4d8dc"},
+    {file = "catboost-1.1-cp310-none-manylinux1_x86_64.whl", hash = "sha256:d21afd39b561ff6775bccbd6671ea6dc1f02717c0aa2a0f9276c133b2b98072d"},
+    {file = "catboost-1.1-cp310-none-win_amd64.whl", hash = "sha256:bf4180951cb16845dfe47e781f4888bd6d0f444a2ef174c35ab60bb1dbba8748"},
+    {file = "catboost-1.1-cp36-none-macosx_10_6_universal2.whl", hash = "sha256:9e11b5fc29bd63b9f62b2acd69383b25ac3bebd313af01f5ac22e20ea59e01e3"},
+    {file = "catboost-1.1-cp36-none-manylinux1_x86_64.whl", hash = "sha256:d5a520c4d786c8dbb77ca11000a8c61a075d17b77ccc088f3a7c4fe5ad0de81b"},
+    {file = "catboost-1.1-cp36-none-win_amd64.whl", hash = "sha256:35cf2b88b733394df88254f57a6d09be7a36c41a0385b983db843fe0bd6da7ec"},
+    {file = "catboost-1.1-cp37-none-macosx_10_6_universal2.whl", hash = "sha256:a3f6c7e5704451da0a0e533f7975c52f9c7ef0397ffcf80d351bee1f565c781c"},
+    {file = "catboost-1.1-cp37-none-manylinux1_x86_64.whl", hash = "sha256:9920bc0de4e0bf8b4b2c66a806ab620d1337df87adfc1d26a7e6e95e0574d849"},
+    {file = "catboost-1.1-cp37-none-win_amd64.whl", hash = "sha256:e5c4af0eef17e0fce52810df3500e0e355f1d8495ceb3620bf49957aa592dac8"},
+    {file = "catboost-1.1-cp38-none-macosx_10_6_universal2.whl", hash = "sha256:c58e611c3672ee405f57021d51c074c4c2fc23ced4d5bb0addc8658535fd692e"},
+    {file = "catboost-1.1-cp38-none-manylinux1_x86_64.whl", hash = "sha256:902dce6acdf75abe1551c75fc2f155c528e51083d772b83372dffb9d3804dcb5"},
+    {file = "catboost-1.1-cp38-none-win_amd64.whl", hash = "sha256:6c115768e9e6bd597e8894ecc9b746f076d4204c61f85bf591a66c8119b7b798"},
+    {file = "catboost-1.1-cp39-none-macosx_10_6_universal2.whl", hash = "sha256:e8fd6033676c34b81dd54b5d400f3e718e3a2174214fda927f6918733fec2c63"},
+    {file = "catboost-1.1-cp39-none-manylinux1_x86_64.whl", hash = "sha256:4d12e85632e8e88bb8b5a00e2489160e6abc3ffdf3acf51bc3f6a9dee16cdac8"},
+    {file = "catboost-1.1-cp39-none-win_amd64.whl", hash = "sha256:5fdfe3ec6ffbd28115ae0717fdb35f020647149c85f7fe115d539032af6645cd"},
 ]
 colorama = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
@@ -679,6 +755,10 @@ exceptiongroup = [
 fonttools = [
     {file = "fonttools-4.38.0-py3-none-any.whl", hash = "sha256:820466f43c8be8c3009aef8b87e785014133508f0de64ec469e4efb643ae54fb"},
     {file = "fonttools-4.38.0.zip", hash = "sha256:2bb244009f9bf3fa100fc3ead6aeb99febe5985fa20afbfbaa2f8946c2fbdaf1"},
+]
+graphviz = [
+    {file = "graphviz-0.20.1-py3-none-any.whl", hash = "sha256:587c58a223b51611c0cf461132da386edd896a029524ca61a1462b880bf97977"},
+    {file = "graphviz-0.20.1.zip", hash = "sha256:8c58f14adaa3b947daf26c19bc1e98c4e0702cdc31cf99153e6f06904d492bf8"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-5.0.0-py3-none-any.whl", hash = "sha256:ddb0e35065e8938f867ed4928d0ae5bf2a53b7773871bfe6bcc7e4fcdc7dea43"},
@@ -914,10 +994,7 @@ matplotlib = [
     {file = "matplotlib-3.6.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:5f97141e05baf160c3ec125f06ceb2a44c9bb62f42fcb8ee1c05313c73e99432"},
     {file = "matplotlib-3.6.1.tar.gz", hash = "sha256:e2d1b7225666f7e1bcc94c0bc9c587a82e3e8691da4757e357e5c2515222ee37"},
 ]
-mokapot = [
-    {file = "mokapot-0.8.3-py3-none-any.whl", hash = "sha256:17351a7bf262d883cb4d49a146add268781c7c7e44022c4b7d63158e3c9b77ab"},
-    {file = "mokapot-0.8.3.tar.gz", hash = "sha256:f38508131f05e307d2ecc26d3044db89cf0f62ae472e2c4d12dd6e19fb49fba8"},
-]
+mokapot = []
 numba = [
     {file = "numba-0.56.3-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:8848697e1e952b56886e84eecd5ae83d890ec0481c48ac803e13e2ab75a7d294"},
     {file = "numba-0.56.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2256fee4332ab1e51cd0ec57086989e4011616ddb438659d99bb35822f43939b"},
@@ -1071,6 +1148,10 @@ pillow = [
     {file = "Pillow-9.2.0-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:0030fdbd926fb85844b8b92e2f9449ba89607231d3dd597a21ae72dc7fe26927"},
     {file = "Pillow-9.2.0.tar.gz", hash = "sha256:75e636fd3e0fb872693f23ccb8a5ff2cd578801251f3a4f6854c6a5d437d3c04"},
 ]
+plotly = [
+    {file = "plotly-5.11.0-py2.py3-none-any.whl", hash = "sha256:52fd74b08aa4fd5a55b9d3034a30dbb746e572d7ed84897422f927fdf687ea5f"},
+    {file = "plotly-5.11.0.tar.gz", hash = "sha256:4efef479c2ec1d86dcdac8405b6ca70ca65649a77408e39a7e84a1ea2db6c787"},
+]
 pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
@@ -1172,6 +1253,10 @@ skranger = [
     {file = "skranger-0.8.0-cp39-cp39-win32.whl", hash = "sha256:b140c3bd5775fb6aa676329b3030591fb4b8c32590e36abed2349010fafa2a89"},
     {file = "skranger-0.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:3bf3d77569811ff26dedbfe14aaed7ad920d54293b630679ac491536771a49c7"},
     {file = "skranger-0.8.0.tar.gz", hash = "sha256:c97530f66a0f30b36d8e65b816932e79bda7ed09f7dd0db0694ba4c042e7724d"},
+]
+tenacity = [
+    {file = "tenacity-8.1.0-py3-none-any.whl", hash = "sha256:35525cd47f82830069f0d6b73f7eb83bc5b73ee2fff0437952cedf98b27653ac"},
+    {file = "tenacity-8.1.0.tar.gz", hash = "sha256:e48c437fdf9340f5666b92cd7990e96bc5fc955e1298baf4a907e3972067a445"},
 ]
 threadpoolctl = [
     {file = "threadpoolctl-3.1.0-py3-none-any.whl", hash = "sha256:8b99adda265feb6773280df41eece7b2e6561b772d21ffd52e372f999024907b"},

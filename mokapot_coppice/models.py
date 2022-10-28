@@ -3,9 +3,9 @@ from argparse import _ArgumentGroup
 
 from sklearn import tree
 from sklearn.linear_model import LogisticRegression
-from sklearn.enemble import StackingClassifier
+from sklearn.ensemble import StackingClassifier
 from skranger.ensemble import RangerForestClassifier
-from xgbosst import XGBClassifier
+from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 
 from mokapot.model import Model
@@ -42,16 +42,24 @@ class XGBModel(Model):
         clf = XGBClassifier()
         super().__init__(clf, *args, **kwargs)
 
+class CatboostModel(Model):
+    DESCRIPTION = "Catboost Classifier"
+    def __init__(self, *args, **kwargs):
+        LOGGER.info("Initialising Coppice Model: Catboost")
+        clf = CatboostClassifier()
+        super().__init__(clf, *args, **kwargs)
+
 class CoppiceModel(Model):
     DESCRIPTION = (
         "Coppice Classifier, a Stacking Classifier of"
-        " RF, XGB, LGBM, and Logistic Regression")
+        " RF, XGB, LGBM, catboost, and Logistic Regression")
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: CoppiceModel")
         estimators = [
             ('rf', RFModel()),
             ('xgb', XGBModel()),
             ('lgbm', LGBMModel()),
+            ('catboost', CatboostModel()),
             ('glm', LogisticRegression()),
         ]
         clf = StackingClassifier(estimators=estimators, final_estimator=LogisticRegression())
@@ -63,6 +71,7 @@ MODELS = {
     "lgbm": LGBMModel,
     "rf": RFModel,
     "xgb": XGBModel,
+    "catboost": CatboostModel,
     "coppice": CoppiceModel,
 }
 

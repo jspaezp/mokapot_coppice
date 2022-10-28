@@ -18,14 +18,16 @@ def test_cli_help():
     assert "--coppice_model" in res.stdout.decode()
 
 
-@pytest.mark.parametrize("model", ["ctree", "lgbm", "rf", "xgb", "coppice"])
+models = ["ctree", "lgbm", "rf", "xgb", "coppice", "catboost"]
+
+@pytest.mark.parametrize("model", models, ids = models)
 def test_cli_plugins(tmp_path, shared_datadir, model):
     phospho_file = shared_datadir / "phospho_rep1.pin"
 
     cmd = [
         "mokapot",
         str(phospho_file),
-        "--vebosity",
+        "-v",
         "3",
         "--dest_dir",
         tmp_path,
