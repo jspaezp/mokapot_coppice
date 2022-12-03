@@ -5,6 +5,8 @@ At least for now, they do not check the correctness of the
 output, just that the expect outputs are created.
 """
 import subprocess
+from loguru import logger
+
 import pytest
 
 # Warnings are errors for these tests
@@ -20,7 +22,8 @@ def test_cli_help():
 
 models = ["ctree", "lgbm", "rf", "xgb", "coppice", "catboost"]
 
-@pytest.mark.parametrize("model", models, ids = models)
+
+@pytest.mark.parametrize("model", models, ids=models)
 def test_cli_plugins(tmp_path, shared_datadir, model):
     phospho_file = shared_datadir / "phospho_rep1.pin"
 
@@ -36,9 +39,11 @@ def test_cli_plugins(tmp_path, shared_datadir, model):
     ]
 
     cmd += ["--coppice_model", model]
+    logger.info(" ".join([str(x) for x in cmd]))
     expected_msg = f"Initialising Coppice Model: {model.upper()}".upper()
 
     # Make sure it does not yell when the plugin is not loaded explicitly
     res = subprocess.run(cmd, check=True, capture_output=True)
     assert expected_msg not in res.stderr.decode().upper()
 
+    assert tmp_path.joinpath("mokapot.peptides.txt").exists()

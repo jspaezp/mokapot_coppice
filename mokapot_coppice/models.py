@@ -1,6 +1,7 @@
 import logging
 from argparse import _ArgumentGroup
 
+from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
 from mokapot.model import Model
 from mokapot.plugins import BasePlugin
@@ -9,7 +10,6 @@ from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
 from skranger.ensemble import RangerForestClassifier
 from xgboost import XGBClassifier
-from catboost import CatBoostClassifier
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,8 +28,22 @@ class LGBMModel(Model):
 
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: LGBM")
-        clf = LGBMClassifier()
+        clf = self.get_model()
         super().__init__(clf, *args, **kwargs)
+
+    @staticmethod
+    def get_model():
+        clf = LGBMClassifier(
+            num_leaves=70,
+            subsample=0.8,
+            subsample_freq=5,
+            max_depth=7,
+            verbose=2,
+            min_data_in_leaf=50,
+            min_data_in_bin=10,
+            force_row_wise=True,
+        )
+        return clf
 
 
 class RFModel(Model):
@@ -37,8 +51,13 @@ class RFModel(Model):
 
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: RF")
-        clf = RangerForestClassifier()
+        clf = self.get_model()
         super().__init__(clf, *args, **kwargs)
+
+    @staticmethod
+    def get_model():
+        clf = RangerForestClassifier(min_node_size=5, max_depth=15, mtry=10)
+        return clf
 
 
 class XGBModel(Model):
@@ -46,8 +65,12 @@ class XGBModel(Model):
 
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: XGBModel")
-        clf = XGBClassifier()
+        clf = self.get_model()
         super().__init__(clf, *args, **kwargs)
+
+    @staticmethod
+    def get_model():
+        return XGBClassifier()
 
 
 class CatboostModel(Model):
@@ -55,8 +78,24 @@ class CatboostModel(Model):
 
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: Catboost")
-        clf = CatBoostClassifier()
+        clf = self.get_model()
         super().__init__(clf, *args, **kwargs)
+
+    @staticmethod
+    def get_model():
+        clf = CatBoostClassifier(
+            learning_rate=0.15,
+            depth=8,
+            leaf_estimation_method="Newton",
+            leaf_estimation_iterations=2,
+            rsm=0.8,
+            min_child_samples=5,
+            early_stopping_rounds=10,
+            metric_period=5,
+            verbose=200,
+            iterations=4000,
+        )
+        return clf
 
 
 class CoppiceModel(Model):
@@ -68,14 +107,17 @@ class CoppiceModel(Model):
     def __init__(self, *args, **kwargs):
         LOGGER.info("Initialising Coppice Model: CoppiceModel")
         estimators = [
-            ("rf", RFModel()),
-            ("xgb", XGBModel()),
-            ("lgbm", LGBMModel()),
-            ("catboost", CatboostModel()),
-            ("glm", LogisticRegression()),
+            ("rf", RFModel.get_model()),
+            ("xgb", XGBModel.get_model()),
+            ("lgbm", LGBMModel.get_model()),
+            ("catboost", CatboostModel.get_model()),
+            ("glm", LogisticRegression(solver="liblinear", max_iter=1000)),
         ]
         clf = StackingClassifier(
-            estimators=estimators, final_estimator=LogisticRegression()
+            estimators=estimators,
+            final_estimator=LogisticRegression(solver="liblinear", max_iter=1000),
+            passthrough=True,
+            verbose=20,
         )
         super().__init__(clf, *args, **kwargs)
 

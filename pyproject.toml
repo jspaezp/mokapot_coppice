@@ -12,7 +12,6 @@ pytest-datadir = "^1.4.1"
 pytest-cov = "^4.0.0"
 
 
-
 [tool.poetry.group.lint.dependencies]
 ruff = "^0.0.86"
 isort = "^5.10.1"
@@ -24,12 +23,24 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-mokapot = { git = "git@github.com:jspaezp/mokapot.git", branch = "feature/plugin_arch" }
-# mokapot = "^0.8.3"
+mokapot = "^0.9.0"
 lightgbm = "^3.3.3"
 skranger = "^0.8.0"
 xgboost = "^1.6.2"
 catboost = "^1.1"
+loguru = "^0.6.0"
+
 
 [tool.poetry.plugins."mokapot.plugins"]
 "mokapot_coppice" = "mokapot_coppice:Plugin"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-v --cov=mokapot_coppice"
+
+[tool.ruff]
+line-length = 88
+
+[tool.isort]
+profile = "black"
