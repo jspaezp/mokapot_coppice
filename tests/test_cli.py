@@ -5,9 +5,9 @@ At least for now, they do not check the correctness of the
 output, just that the expect outputs are created.
 """
 import subprocess
-from loguru import logger
 
 import pytest
+from loguru import logger
 
 # Warnings are errors for these tests
 pytestmark = pytest.mark.filterwarnings("error")

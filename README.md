@@ -33,7 +33,7 @@ to the cli!
 
 ```shell
 # the model can be any of "ctree", "lgbm", "rf", "xgb", "catboost"
-mokapot {myfile.pin} --coppice_model xgb 
+mokapot {myfile.pin} --coppice_model xgb
 ```
 
 # Issues
