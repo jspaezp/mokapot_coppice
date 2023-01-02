@@ -2,6 +2,7 @@
 from snakemake.utils import min_version
 min_version("6.0")
 
+from pathlib import Path
 from contextlib import contextmanager
 from loguru import logger as lg_logger
 
@@ -75,7 +76,8 @@ PINFILES = [x for x in files if x.endswith("pin")]
 
 rule all:
     input:
-        *files
+        *files,
+        "uploaded.done",
 
 
 from pathlib import Path
@@ -273,7 +275,11 @@ rule upload_wandb_artifact:
       *PINFILES,
     output: touch("uploaded.done")
     run:
-      run = wandb.init(project="my_project")
-      my_data = wandb.Artifact("new_dataset", type="raw_data")
-      my_data.add_dir("path/to/my/data")
+      run = wandb.init(project="mokapot_coppice")
+      my_data = wandb.Artifact("pinfiles", type="raw_data")
+
+      for pin in input:
+        newname = "pinfiles/" + Path(pin).parents[1].stem + ".pin"
+        my_data.add_file(local_path = str(pin), name = newname)
+
       run.log_artifact(my_data)
