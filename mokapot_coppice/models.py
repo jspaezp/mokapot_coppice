@@ -1,13 +1,15 @@
+import argparse
 import logging
 from argparse import _ArgumentGroup
 
 from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
-from mokapot.model import Model
+from mokapot.model import PERC_GRID, Model
 from mokapot.plugins import BasePlugin
 from sklearn import tree
 from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
 from skranger.ensemble import RangerForestClassifier
 from xgboost import XGBClassifier
 
@@ -38,7 +40,7 @@ class LGBMModel(Model):
             subsample=0.8,
             subsample_freq=5,
             max_depth=7,
-            verbose=2,
+            silent="warn",
             min_data_in_leaf=50,
             min_data_in_bin=10,
             force_row_wise=True,
@@ -98,6 +100,17 @@ class CatboostModel(Model):
         return clf
 
 
+def with_grid(model):
+    out = GridSearchCV(
+        model,
+        param_grid=PERC_GRID,
+        refit=False,
+        cv=3,
+        n_jobs=-1,
+    )
+    return out
+
+
 class CoppiceModel(Model):
     DESCRIPTION = (
         "Coppice Classifier, a Stacking Classifier of"
@@ -144,6 +157,15 @@ class Plugin(BasePlugin):
                 " mokapot_coppice"
             ),
         )
+        parser.add_argument(
+            "--coppice_with_grid",
+            action=argparse.BooleanOptionalAction,
+            default=False,
+            help=(
+                "Whether to use a grid search to find the best parameters for the"
+                " coppice model (it is always used in the default svm model in mokapot)"
+            ),
+        )
 
     def get_model(self, config):
         if config.coppice_model is None:
@@ -155,13 +177,17 @@ class Plugin(BasePlugin):
         else:
             LOGGER.info(f"Using model {config.coppice_model}")
             model_builder = MODELS[config.coppice_model]
-            return model_builder(
+            model = model_builder(
                 train_fdr=config.train_fdr,
                 max_iter=config.max_iter,
                 direction=config.direction,
                 override=config.override,
                 subset_max_train=config.subset_max_train,
             )
+
+            if config.coppice_with_grid:
+                model = with_grid(model)
+            return model
 
     def process_data(self, data, config):
         return data

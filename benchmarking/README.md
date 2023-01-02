@@ -12,6 +12,8 @@ for the benchmarking of the models/parameters in the repository.
 
 # Running
 
+## Building the data
+
 ```
 snakemake --verbose --cores 4 --directory $PWD -s snakefile.smk --keep-incomplete --configfile config.yml
 ```
@@ -21,9 +23,21 @@ to wandb (since git does not want/handle well large data).
 
 These files will then be used in CICD to test the performance of the models.
 
+## Running the benchmarks
+
+```
+export WANDB_API_KEY=xxxx.....xxx
+bash benchmark.bash
+```
+
 # Adding files to the testing
 
 If you want to add more files to the workflow please reach out! I would love to have
 a better representation of the data available form the proteomics community!
 Feel free to open and issue and leave a brief explanation on what files you want added
 and (maybe...) why you feel like that kind of data has not been represented.
+
+# TODO
+
+- Add parallel execution of the tests (cloud or local ...)
+- Add execution to CICD
