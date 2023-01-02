@@ -1,5 +1,6 @@
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -11,29 +12,31 @@ FLANKING_REGEX = re.compile(r"(^.{1,3}\.)|(\..{1,3}$)")
 
 
 def run_model(model, data, grid=False):
-    # TODO run model
-    run = f"python -m mokapot.mokapot {data} --keep_decoys"
-    if model != "baseline":
-        run += f" --plugin mokapot_coppice --coppice_model {model}"
-        if grid:
-            run += " --coppice_with_grid"
+    with tempfile.TemporaryDirectory() as tmpdirname:
 
-    subprocess.run(run, shell=True, check=True)
-    out = get_metrics()
+        print("created temporary directory", tmpdirname)
+        run = f"python -m mokapot.mokapot {data} --keep_decoys --dest_dir {tmpdirname}"
+        if model != "baseline":
+            run += f" --plugin mokapot_coppice --coppice_model {model}"
+            if grid:
+                run += " --coppice_with_grid"
+
+        subprocess.run(run, shell=True, check=True)
+        out = get_metrics(tmpdirname)
     return out
 
 
-def get_metrics():
+def get_metrics(outdir):
     pep_dat = pd.concat(
         [
-            pd.read_csv("mokapot.decoy.peptides.txt", sep="\t"),
-            pd.read_csv("mokapot.peptides.txt", sep="\t"),
+            pd.read_csv(outdir + "mokapot.decoy.peptides.txt", sep="\t"),
+            pd.read_csv(outdir + "mokapot.peptides.txt", sep="\t"),
         ]
     )
     psm_dat = pd.concat(
         [
-            pd.read_csv("mokapot.decoy.psms.txt", sep="\t"),
-            pd.read_csv("mokapot.psms.txt", sep="\t"),
+            pd.read_csv(outdir + "mokapot.decoy.psms.txt", sep="\t"),
+            pd.read_csv(outdir + "mokapot.psms.txt", sep="\t"),
         ]
     )
 
