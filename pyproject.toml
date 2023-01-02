@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "mokapot_coppice"
-version = "0.0.1"
-description = ""
+version = "0.0.2"
+description = "Implements tree based models for Mokapot"
 authors = ["J. Sebastian Paez <jspaezp@users.noreply.github.com>"]
 packages = [{include = "mokapot_coppice"}]
 license = "Apache 2.0"

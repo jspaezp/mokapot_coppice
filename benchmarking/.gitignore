@@ -1,3 +1,7 @@
-
+/.snakemake
 /data/*.mzML
 /mokapot*.txt
+/artifacts
+/catboost_info
+/results
+/sweep.info

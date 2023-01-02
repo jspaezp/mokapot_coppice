@@ -41,7 +41,7 @@ class LGBMModel(Model):
             subsample_freq=5,
             max_depth=7,
             silent="warn",
-            min_data_in_leaf=50,
+            # min_data_in_leaf=50,
             min_data_in_bin=10,
             force_row_wise=True,
         )
@@ -100,15 +100,38 @@ class CatboostModel(Model):
         return clf
 
 
-def with_grid(model):
-    out = GridSearchCV(
-        model,
-        param_grid=PERC_GRID,
-        refit=False,
-        cv=3,
+# very non-gently adapted from mokapot
+class PercolatorGridCVModel(Model):
+    def __init__(
+        self,
+        classifier,
+        scaler=None,
+        train_fdr=0.01,
+        max_iter=10,
+        direction=None,
+        override=False,
+        subset_max_train=None,
         n_jobs=-1,
-    )
-    return out
+    ):
+        """Initialize a PercolatorModel"""
+        self.n_jobs = n_jobs
+        estimator = GridSearchCV(
+            classifier,
+            param_grid=PERC_GRID,
+            refit=False,
+            cv=3,
+            n_jobs=n_jobs,
+        )
+
+        super().__init__(
+            estimator=estimator,
+            scaler=scaler,
+            train_fdr=train_fdr,
+            max_iter=max_iter,
+            direction=direction,
+            override=override,
+            subset_max_train=subset_max_train,
+        )
 
 
 class CoppiceModel(Model):
@@ -177,16 +200,25 @@ class Plugin(BasePlugin):
         else:
             LOGGER.info(f"Using model {config.coppice_model}")
             model_builder = MODELS[config.coppice_model]
-            model = model_builder(
-                train_fdr=config.train_fdr,
-                max_iter=config.max_iter,
-                direction=config.direction,
-                override=config.override,
-                subset_max_train=config.subset_max_train,
-            )
 
             if config.coppice_with_grid:
-                model = with_grid(model)
+                LOGGER.info(f"Setting up model {config.coppice_model} with grid")
+                model = PercolatorGridCVModel(
+                    classifier=model_builder.get_model(),
+                    train_fdr=config.train_fdr,
+                    max_iter=config.max_iter,
+                    direction=config.direction,
+                    override=config.override,
+                    subset_max_train=config.subset_max_train,
+                )
+            else:
+                model = model_builder(
+                    train_fdr=config.train_fdr,
+                    max_iter=config.max_iter,
+                    direction=config.direction,
+                    override=config.override,
+                    subset_max_train=config.subset_max_train,
+                )
             return model
 
     def process_data(self, data, config):

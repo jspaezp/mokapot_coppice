@@ -13,7 +13,6 @@ FLANKING_REGEX = re.compile(r"(^.{1,3}\.)|(\..{1,3}$)")
 
 def run_model(model, data, grid=False):
     with tempfile.TemporaryDirectory() as tmpdirname:
-
         print("created temporary directory", tmpdirname)
         run = f"python -m mokapot.mokapot {data} --keep_decoys --dest_dir {tmpdirname}"
         if model != "baseline":
@@ -21,6 +20,7 @@ def run_model(model, data, grid=False):
             if grid:
                 run += " --coppice_with_grid"
 
+        print(run)
         subprocess.run(run, shell=True, check=True)
         out = get_metrics(tmpdirname)
     return out

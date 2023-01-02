@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/zsh
 
 set -x
 set -e
@@ -10,7 +10,7 @@ command_exists () {
 
 NUM_WORKERS=4
 
-wandb sweep --project mokapot_coppice small_sweep_config.yml &> sweep.info
+wandb sweep --project mokapot_coppice sweep_config.yml &> sweep.info
 
 # Added here to support OSX where gnu grep is installed as ggrep
 if command_exists ggrep ; then
