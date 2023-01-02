@@ -275,6 +275,7 @@ rule upload_wandb_artifact:
       *PINFILES,
     output: touch("uploaded.done")
     run:
+      import wandb
       run = wandb.init(project="mokapot_coppice")
       my_data = wandb.Artifact("pinfiles", type="raw_data")
 
