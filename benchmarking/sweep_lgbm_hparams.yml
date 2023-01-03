@@ -8,7 +8,7 @@ parameters:
   lr:
     distribution: log_uniform_values
     min: 0.01
-    max: 0.5
+    max: 0.25
   max_depth:
     distribution: int_uniform
     min: 2
