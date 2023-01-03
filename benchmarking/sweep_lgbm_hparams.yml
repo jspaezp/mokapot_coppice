@@ -29,7 +29,7 @@ parameters:
     values:
     - "gbdt"
     - "dart"
-  data_sample_strategy:
+  data_sample_strategy: # ATM it thors a warning saying this is not a recognized arg
     values:
     - "goss"
     - "bagging"

@@ -24,10 +24,10 @@ def run_model(data, model_args):
         # early_stopping_round=30,
         **model_args
     )
-    model = Model(clf, max_iter=5, folds=3)
+    model = Model(clf, max_iter=5)
     # Read the PSMs from the PIN file:
     psms = mokapot.read_pin(data)
-    results, models = mokapot.brew(psms, model)
+    results, models = mokapot.brew(psms, model, folds=3)
     with tempfile.TemporaryDirectory() as tmpdir:
         results.to_txt(dest_dir=tmpdir, decoys=True)
         out = get_metrics(tmpdir + "/")
