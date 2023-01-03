@@ -20,11 +20,11 @@ def run_model(data, model_args):
         force_row_wise=True,
         bagging_freq=10,
         subsample_freq=10,
-        metric="cross_entropy",
+        # metric="cross_entropy",
         # early_stopping_round=30,
         **model_args
     )
-    model = Model(clf)
+    model = Model(clf, max_iter=5, folds=3)
     # Read the PSMs from the PIN file:
     psms = mokapot.read_pin(data)
     results, models = mokapot.brew(psms, model)
