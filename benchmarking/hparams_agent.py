@@ -9,6 +9,12 @@ import wandb
 from lightgbm import LGBMClassifier
 from mokapot.model import Model
 
+from loguru import logger
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+
 MOD_REGEX = re.compile(r"\[.*?\]")
 FLANKING_REGEX = re.compile(r"(^.{1,3}\.)|(\..{1,3}$)")
 
@@ -80,9 +86,14 @@ def main():
         "boosting_type": wandb.config.boosting,
         "num_iterations": wandb.config.num_iterations,
     }
+    logger.info("Starting new parameters run:")
+    for k, v in model_args.items():
+        logger.info(f"{k}: {v}")
+
 
     results = {}
     for data in DATASETS:
+        logger.info(f"Starting new dataset {str(data)}")
         dataname = data.stem
         out = run_model(str(data), model_args=model_args)
         out.pop("table")
@@ -95,6 +106,9 @@ def main():
 
         results[dataname] = out
         out = {dataname + k: v for k, v in out.items()}
+        for k, v in out.items():
+            logger.info(f"{k}: {v}")
+        logger.info(out)
         wandb.log(out)
 
         # TODO add acceptances vs FDR plot
