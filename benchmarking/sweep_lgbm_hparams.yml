@@ -1,0 +1,40 @@
+# https://neptune.ai/blog/lightgbm-parameters-guide
+method: bayes
+name: sweep
+metric:
+  goal: maximize
+  name: mean_npep_1pct
+parameters:
+  lr:
+    distribution: log_uniform_values
+    min: 0.01
+    max: 0.5
+  max_depth:
+    distribution: int_uniform
+    min: 2
+    max: 30
+  num_leaves:
+    distribution: int_uniform
+    min: 15
+    max: 200
+  feature_fraction:
+    distribution: uniform
+    min: 0.2
+    max: 1.0
+  subsample: # is this redundant with feature fraction?
+    distribution: uniform
+    min: 0.2
+    max: 1.0
+  boosting:
+    values:
+    - "gbdt"
+    - "dart"
+  data_sample_strategy:
+    values:
+    - "goss"
+    - "bagging"
+  num_iterations:
+    values:
+    - 100
+    - 200
+    - 400
