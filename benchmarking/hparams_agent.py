@@ -85,6 +85,8 @@ def main():
         "boosting": wandb.config.boosting,
         "boosting_type": wandb.config.boosting,
         "num_iterations": wandb.config.num_iterations,
+        "reg_alpha": wandb.config.l1_regularization,
+        "reg_lambda": wandb.config.l2_regularization,
     }
     logger.info("Starting new parameters run:")
     for k, v in model_args.items():
@@ -126,5 +128,5 @@ if __name__ == "__main__":
 
     # Start sweep job.
     wandb.agent(
-        args.sweep_id, function=main, project="mokapot_coppice_hparams", count=20
+        args.sweep_id, function=main, project="mokapot_coppice_hparams", count=60,
     )
