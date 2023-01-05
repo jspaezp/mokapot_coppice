@@ -43,6 +43,6 @@ parameters:
     max: 10
   l2_regularization:
     distribution: uniform
-    min: 0
-    max: 50
+    min: 10
+    max: 80
 

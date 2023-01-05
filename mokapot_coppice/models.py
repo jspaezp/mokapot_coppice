@@ -9,7 +9,7 @@ from mokapot.plugins import BasePlugin
 from sklearn import tree
 from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, train_test_split
 from skranger.ensemble import RangerForestClassifier
 from xgboost import XGBClassifier
 
@@ -25,6 +25,27 @@ class CtreeModel(Model):
         super().__init__(clf, *args, **kwargs)
 
 
+LGBM_ARGS = {
+    "learning_rate": 0.24,
+    "max_depth": 15,
+    "num_leaves": 90,
+    "feature_fraction": 0.65,
+    "colsample_bytree": 0.65,
+    "data_sample_strategy": "bagging",
+    "subsample": 0.94,
+    "boosting": "gbdt",
+    "boosting_type": "gbdt",
+    "num_iterations": 300,
+    "reg_alpha": 2.5,
+    "reg_lambda": 40,
+    "verbose": 0,
+    "min_data_in_bin": 10,
+    "force_row_wise": True,
+    "bagging_freq": 10,
+    "subsample_freq": 10,
+}
+
+
 class LGBMModel(Model):
     DESCRIPTION = "LightGBM Classifier"
 
@@ -35,15 +56,33 @@ class LGBMModel(Model):
 
     @staticmethod
     def get_model():
-        clf = LGBMClassifier(
-            num_leaves=70,
-            subsample=0.8,
-            subsample_freq=5,
-            max_depth=7,
-            silent="warn",
-            # min_data_in_leaf=50,
-            min_data_in_bin=10,
-            force_row_wise=True,
+        clf = LGBMClassifier(**LGBM_ARGS)
+        return clf
+
+
+class EarlyStopLGBM(LGBMClassifier):
+    def fit(self, X, y, **kwargs):
+        eval_subset = self.eval_subset if hasattr(self, "eval_subset") else 0.3
+        print("Subsetting early stopping evaluation set")
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=eval_subset)
+        super().fit(X_train, y_train, eval_set=[(X_val, y_val)], **kwargs)
+        return self
+
+
+class EarlyStopLGBMModel(Model):
+    DESCRIPTION = "LightGBM Classifier with early stopping"
+
+    def __init__(self, *args, **kwargs):
+        LOGGER.info("Initialising Coppice Model: EarlyStopLGBM")
+        clf = self.get_model()
+        super().__init__(clf, *args, **kwargs)
+
+    @staticmethod
+    def get_model():
+        clf = EarlyStopLGBM(
+            metric="cross_entropy",
+            early_stopping_round=30,
+            **LGBM_ARGS,
         )
         return clf
 
@@ -161,6 +200,7 @@ class CoppiceModel(Model):
 MODELS = {
     "ctree": CtreeModel,
     "lgbm": LGBMModel,
+    "earlystop_lgbm": EarlyStopLGBMModel,
     "rf": RFModel,
     "xgb": XGBModel,
     "catboost": CatboostModel,
