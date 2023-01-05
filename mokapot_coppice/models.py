@@ -1,13 +1,15 @@
+import argparse
 import logging
 from argparse import _ArgumentGroup
 
 from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
-from mokapot.model import Model
+from mokapot.model import PERC_GRID, Model
 from mokapot.plugins import BasePlugin
 from sklearn import tree
 from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV, train_test_split
 from skranger.ensemble import RangerForestClassifier
 from xgboost import XGBClassifier
 
@@ -23,6 +25,27 @@ class CtreeModel(Model):
         super().__init__(clf, *args, **kwargs)
 
 
+LGBM_ARGS = {
+    "learning_rate": 0.24,
+    "max_depth": 15,
+    "num_leaves": 90,
+    "feature_fraction": 0.65,
+    "colsample_bytree": 0.65,
+    "data_sample_strategy": "bagging",
+    "subsample": 0.94,
+    "boosting": "gbdt",
+    "boosting_type": "gbdt",
+    "num_iterations": 300,
+    "reg_alpha": 2.5,
+    "reg_lambda": 40,
+    "verbose": 0,
+    "min_data_in_bin": 10,
+    "force_row_wise": True,
+    "bagging_freq": 10,
+    "subsample_freq": 10,
+}
+
+
 class LGBMModel(Model):
     DESCRIPTION = "LightGBM Classifier"
 
@@ -33,15 +56,33 @@ class LGBMModel(Model):
 
     @staticmethod
     def get_model():
-        clf = LGBMClassifier(
-            num_leaves=70,
-            subsample=0.8,
-            subsample_freq=5,
-            max_depth=7,
-            verbose=2,
-            min_data_in_leaf=50,
-            min_data_in_bin=10,
-            force_row_wise=True,
+        clf = LGBMClassifier(**LGBM_ARGS)
+        return clf
+
+
+class EarlyStopLGBM(LGBMClassifier):
+    def fit(self, X, y, **kwargs):
+        eval_subset = self.eval_subset if hasattr(self, "eval_subset") else 0.3
+        print("Subsetting early stopping evaluation set")
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=eval_subset)
+        super().fit(X_train, y_train, eval_set=[(X_val, y_val)], **kwargs)
+        return self
+
+
+class EarlyStopLGBMModel(Model):
+    DESCRIPTION = "LightGBM Classifier with early stopping"
+
+    def __init__(self, *args, **kwargs):
+        LOGGER.info("Initialising Coppice Model: EarlyStopLGBM")
+        clf = self.get_model()
+        super().__init__(clf, *args, **kwargs)
+
+    @staticmethod
+    def get_model():
+        clf = EarlyStopLGBM(
+            metric="cross_entropy",
+            early_stopping_round=30,
+            **LGBM_ARGS,
         )
         return clf
 
@@ -98,6 +139,40 @@ class CatboostModel(Model):
         return clf
 
 
+# very non-gently adapted from mokapot
+class PercolatorGridCVModel(Model):
+    def __init__(
+        self,
+        classifier,
+        scaler=None,
+        train_fdr=0.01,
+        max_iter=10,
+        direction=None,
+        override=False,
+        subset_max_train=None,
+        n_jobs=-1,
+    ):
+        """Initialize a PercolatorModel"""
+        self.n_jobs = n_jobs
+        estimator = GridSearchCV(
+            classifier,
+            param_grid=PERC_GRID,
+            refit=False,
+            cv=3,
+            n_jobs=n_jobs,
+        )
+
+        super().__init__(
+            estimator=estimator,
+            scaler=scaler,
+            train_fdr=train_fdr,
+            max_iter=max_iter,
+            direction=direction,
+            override=override,
+            subset_max_train=subset_max_train,
+        )
+
+
 class CoppiceModel(Model):
     DESCRIPTION = (
         "Coppice Classifier, a Stacking Classifier of"
@@ -125,6 +200,7 @@ class CoppiceModel(Model):
 MODELS = {
     "ctree": CtreeModel,
     "lgbm": LGBMModel,
+    "earlystop_lgbm": EarlyStopLGBMModel,
     "rf": RFModel,
     "xgb": XGBModel,
     "catboost": CatboostModel,
@@ -144,6 +220,15 @@ class Plugin(BasePlugin):
                 " mokapot_coppice"
             ),
         )
+        parser.add_argument(
+            "--coppice_with_grid",
+            action=argparse.BooleanOptionalAction,
+            default=False,
+            help=(
+                "Whether to use a grid search to find the best parameters for the"
+                " coppice model (it is always used in the default svm model in mokapot)"
+            ),
+        )
 
     def get_model(self, config):
         if config.coppice_model is None:
@@ -155,13 +240,26 @@ class Plugin(BasePlugin):
         else:
             LOGGER.info(f"Using model {config.coppice_model}")
             model_builder = MODELS[config.coppice_model]
-            return model_builder(
-                train_fdr=config.train_fdr,
-                max_iter=config.max_iter,
-                direction=config.direction,
-                override=config.override,
-                subset_max_train=config.subset_max_train,
-            )
+
+            if config.coppice_with_grid:
+                LOGGER.info(f"Setting up model {config.coppice_model} with grid")
+                model = PercolatorGridCVModel(
+                    classifier=model_builder.get_model(),
+                    train_fdr=config.train_fdr,
+                    max_iter=config.max_iter,
+                    direction=config.direction,
+                    override=config.override,
+                    subset_max_train=config.subset_max_train,
+                )
+            else:
+                model = model_builder(
+                    train_fdr=config.train_fdr,
+                    max_iter=config.max_iter,
+                    direction=config.direction,
+                    override=config.override,
+                    subset_max_train=config.subset_max_train,
+                )
+            return model
 
     def process_data(self, data, config):
         return data

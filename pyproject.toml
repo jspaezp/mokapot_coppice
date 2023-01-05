@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "mokapot_coppice"
-version = "0.0.1"
-description = ""
+version = "0.0.2"
+description = "Implements tree based models for Mokapot"
 authors = ["J. Sebastian Paez <jspaezp@users.noreply.github.com>"]
 packages = [{include = "mokapot_coppice"}]
 license = "Apache 2.0"
@@ -17,18 +17,23 @@ ruff = "^0.0.86"
 isort = "^5.10.1"
 black = "^22.10.0"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.19.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.8,<3.11"
 mokapot = "^0.9.0"
 lightgbm = "^3.3.3"
 skranger = "^0.8.0"
 xgboost = "^1.6.2"
 catboost = "^1.1"
 loguru = "^0.6.0"
+llvmlite = "^0.39.0"
 
 
 [tool.poetry.plugins."mokapot.plugins"]

@@ -21,10 +21,13 @@ def test_cli_help():
 
 
 models = ["ctree", "lgbm", "rf", "xgb", "coppice", "catboost"]
+grid_args = ["--coppice_with_grid", "--no-coppice_with_grid", ""]
+grid_ids = ["with_grid", "no_grid", "no_grid_default"]
 
 
+@pytest.mark.parametrize("grid", grid_args, ids=grid_ids)
 @pytest.mark.parametrize("model", models, ids=models)
-def test_cli_plugins(tmp_path, shared_datadir, model):
+def test_cli_plugins(tmp_path, shared_datadir, model, grid):
     phospho_file = shared_datadir / "phospho_rep1.pin"
 
     cmd = [
@@ -39,6 +42,8 @@ def test_cli_plugins(tmp_path, shared_datadir, model):
     ]
 
     cmd += ["--coppice_model", model]
+    if grid:
+        cmd += [grid]
     logger.info(" ".join([str(x) for x in cmd]))
     expected_msg = f"Initialising Coppice Model: {model.upper()}".upper()
 

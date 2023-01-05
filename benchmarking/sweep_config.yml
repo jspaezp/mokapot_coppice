@@ -1,0 +1,18 @@
+method: grid
+name: sweep
+metric:
+  goal: maximize
+  name: mean_npep_1pct
+parameters:
+  model:
+    values:
+      - baseline
+      # - ctree
+      - lgbm
+      - earlystop_lgbm
+      # - rf
+      # - xgb
+      # - catboost
+  grid:
+    values:
+      - false

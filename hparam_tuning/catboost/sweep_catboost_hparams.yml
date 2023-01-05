@@ -1,0 +1,31 @@
+# https://neptune.ai/blog/lightgbm-parameters-guide
+method: bayes
+name: sweep
+metric:
+  goal: maximize
+  name: mean_npep_1pct
+parameters:
+  objective:
+    values:
+    - Logloss
+    - CrossEntropy
+  lr: #used
+    distribution: log_uniform_values
+    min: 0.05
+    max: 0.5
+  max_depth: #used
+    distribution: int_uniform
+    min: 2
+    max: 8
+  subsample: # used
+    distribution: uniform
+    min: 0.4
+    max: 1.0
+  num_iterations: # Limiting to 1k due to time
+    values:
+    - 100
+    - 1000
+  l2_regularization: # used
+    distribution: uniform
+    min: 0
+    max: 100

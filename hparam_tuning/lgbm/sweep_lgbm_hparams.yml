@@ -1,0 +1,48 @@
+# https://neptune.ai/blog/lightgbm-parameters-guide
+method: bayes
+name: sweep
+metric:
+  goal: maximize
+  name: mean_npep_1pct
+parameters:
+  lr:
+    distribution: log_uniform_values
+    min: 0.1
+    max: 0.25
+  max_depth:
+    distribution: int_uniform
+    min: 15
+    max: 30
+  num_leaves:
+    distribution: int_uniform
+    min: 20
+    max: 100
+  feature_fraction:
+    distribution: uniform
+    min: 0.5
+    max: 1.0
+  subsample: # is this redundant with feature fraction?
+    distribution: uniform
+    min: 0.8
+    max: 1.0
+  boosting:
+    values:
+    - "gbdt"
+    - "dart"
+  data_sample_strategy: # ATM it thors a warning saying this is not a recognized arg
+    values:
+    - "goss"
+    - "bagging"
+  num_iterations:
+    values:
+    - 200
+    - 400
+  l1_regularization:
+    distribution: uniform
+    min: 0
+    max: 10
+  l2_regularization:
+    distribution: uniform
+    min: 10
+    max: 80
+
