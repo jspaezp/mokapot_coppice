@@ -22,7 +22,7 @@ def run_model(model, data, grid=False):
 
         print(run)
         subprocess.run(run, shell=True, check=True)
-        out = get_metrics(tmpdirname+ "/")
+        out = get_metrics(tmpdirname + "/")
     return out
 
 

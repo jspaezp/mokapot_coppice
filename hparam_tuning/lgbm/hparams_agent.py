@@ -1,3 +1,4 @@
+import logging
 import re
 import tempfile
 from pathlib import Path
@@ -7,10 +8,8 @@ import numpy as np
 import pandas as pd
 import wandb
 from lightgbm import LGBMClassifier
-from mokapot.model import Model
-
 from loguru import logger
-import logging
+from mokapot.model import Model
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -28,7 +27,7 @@ def run_model(data, model_args):
         subsample_freq=10,
         # metric="cross_entropy",
         # early_stopping_round=30,
-        **model_args
+        **model_args,
     )
     model = Model(clf, max_iter=5)
     # Read the PSMs from the PIN file:
@@ -92,7 +91,6 @@ def main():
     for k, v in model_args.items():
         logger.info(f"{k}: {v}")
 
-
     results = {}
     for data in DATASETS:
         logger.info(f"Starting new dataset {str(data)}")
@@ -128,5 +126,8 @@ if __name__ == "__main__":
 
     # Start sweep job.
     wandb.agent(
-        args.sweep_id, function=main, project="mokapot_coppice_hparams", count=60,
+        args.sweep_id,
+        function=main,
+        project="mokapot_coppice_hparams",
+        count=60,
     )

@@ -8,7 +8,7 @@ command_exists () {
     type "$1" &> /dev/null ;
 }
 
-NUM_WORKERS=2
+NUM_WORKERS=1
 
 wandb sweep --project mokapot_coppice_hparams sweep_lgbm_hparams.yml &> param_sweep.info
 

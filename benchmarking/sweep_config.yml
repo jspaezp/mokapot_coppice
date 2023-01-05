@@ -9,10 +9,10 @@ parameters:
       - baseline
       # - ctree
       - lgbm
+      - earlystop_lgbm
       # - rf
       # - xgb
       # - catboost
   grid:
     values:
-      - true
       - false
